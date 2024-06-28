@@ -103,8 +103,9 @@ export const signup = async (req, res) => {
     res.status(data.code).json(data);
 };
 
-// export const signin = async (req, res) => {
-//   // console.log('-->',req.body);
-//   const data = await UserService.signin(req.body);
-//     res.status(data.code).json(data);
-// };
+export const signin = async (req, res) => {
+  // console.log('-->',req.body);
+  const data = await UserService.signin(req.body);
+    res.status(data.code).json(data);
+    
+};

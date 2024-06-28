@@ -23,7 +23,7 @@ const router = express.Router();
 
 
 router.post('/signup',newUserValidator,userController.signup)
-// router.post('/signin',userController.signin)
+router.post('/signin',userController.signin)
 
 
 export default router;
