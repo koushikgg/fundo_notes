@@ -1,3 +1,4 @@
+import { where } from 'sequelize';
 import sequelize, { DataTypes } from '../config/database';
 import HttpStatus from 'http-status-codes';
 
@@ -51,4 +52,35 @@ export const readAllNotes = async (body) => {
         }
     }
     
+}
+
+//getting notes by id
+export const getNotesById = async (body) =>{
+    try {
+        if (!body){
+            return {
+                code: HttpStatus.NOT_FOUND,
+                data:[],
+                Message: "Please Enter Valid Id"
+            }
+        }else{
+            const Maindata =await Notes.findByPk(body)
+            if (!Maindata){
+                return {
+                    code: HttpStatus.NOT_FOUND,
+                    data:[],
+                    Message: "notes Not Found"
+                }
+            }else{
+                return {
+                    code: HttpStatus.OK,
+                    data:Maindata,
+                    Message: "notes Fetch Successfully"
+                }
+            }
+            
+        }
+    } catch (error) {
+        
+    }
 }
