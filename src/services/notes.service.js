@@ -1,6 +1,7 @@
 import { where } from 'sequelize';
 import sequelize, { DataTypes } from '../config/database';
 import HttpStatus from 'http-status-codes';
+// import { updateNote } from '../controllers/notes.controller';
 
 const Notes = require('../models/notes')(sequelize, DataTypes);
 
@@ -24,7 +25,6 @@ export const createNotes = async (body) => {
     }
 
 }
-
 
 //getting notes
 export const readAllNotes = async (body) => {
@@ -81,6 +81,38 @@ export const getNotesById = async (body) =>{
             
         }
     } catch (error) {
-        
+        return {
+            code: HttpStatus.BAD_REQUEST,
+            data:[],
+            message: 'Unable to fetch notes'
+        }   
+    }
+}
+
+//update notes
+export const updateNote = async (updatedNotes,ID) =>{
+    try {
+        if (!updatedNotes || !ID){
+            return {
+                code: HttpStatus.NOT_FOUND,
+                data:[],
+                message: "Please Provide Valid Id"
+            }
+        }else{
+            await Notes.update(updatedNotes,{where:{id:ID}})
+            const data = await Notes.findByPk(ID)
+
+            return {
+                code: HttpStatus.OK,
+                data: data,
+                message: "note Updated Successfully"
+            }
+        }
+    } catch (error) {
+        return {
+            code: HttpStatus.BAD_REQUEST,
+            data:[],
+            message: 'Unable to update notes'
+        }  
     }
 }

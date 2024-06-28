@@ -16,3 +16,8 @@ export const getNotesById = async (req, res) =>{
     const data = await notesService.getNotesById(req.params.id);
     res.status(data.code).json(data);
 }
+
+export const updateNote = async (req, res) =>{
+    const data = await notesService.updateNote(req.body, req.params.id);
+    res.status(data.code).json(data);
+}
