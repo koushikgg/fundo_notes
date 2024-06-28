@@ -22,7 +22,7 @@ const router = express.Router();
 
 
 
-// router.post('',newUserValidator,userController.signup)
+router.post('/signup',newUserValidator,userController.signup)
 // router.post('/signin',userController.signin)
 
 

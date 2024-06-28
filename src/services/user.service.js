@@ -13,27 +13,27 @@ export const getAllUsers = async () => {
   return data;
 };
 
-// //create new user
-// export const signup = async (body) => {
-//   try {
-//     const data = await User.create(body);
+//create new user
+export const signup = async (body) => {
+  try {
+    const data = await User.create(body);
 
-//     return {
-//       code: HttpStatus.CREATED,
-//       data: data,
-//       message: 'User created successfully'
-//     };
+    return {
+      code: HttpStatus.CREATED,
+      data: data,
+      message: 'User created successfully'
+    };
 
-//   } catch (error) {
-//     return {
-//       code: HttpStatus.BAD_REQUEST,
-//       data: data,
-//       message: 'unsuccessfully'
-//     };
+  } catch (error) {
+    return {
+      code: HttpStatus.BAD_REQUEST,
+      data: data,
+      message: 'unsuccessfully'
+    };
 
-//   }
+  }
 
-// };
+};
 
 //login user
 // export const signin = async (body) => {
