@@ -1,6 +1,7 @@
 import sequelize, { DataTypes } from '../config/database';
 import HttpStatus from 'http-status-codes';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import dontenv from 'dotenv';
 dontenv.config();
 const screteKey = process.env.SECRET_KEY;
@@ -16,6 +17,8 @@ export const getAllUsers = async () => {
 //create new user
 export const signup = async (body) => {
   try {
+    const hashedPassword = await bcrypt.hash(body.password,10);
+    body.password=hashedPassword
     const data = await User.create(body);
 
     return {
@@ -56,7 +59,8 @@ export const signin = async (body) => {
       }
     }
 
-    if (user.password!== body.password){
+    const validPassword = await bcrypt.compare(body.password,user.password);
+    if (!validPassword){
       return {
         code: HttpStatus.UNAUTHORIZED,
         data: [],
