@@ -19,7 +19,7 @@ export const createNotes = async (body) => {
     } catch (error) {
         return {
             code: HttpStatus.BAD_REQUEST,
-            data:[],
+            data: [],
             message: 'notes not created'
         }
     }
@@ -30,76 +30,76 @@ export const createNotes = async (body) => {
 export const readAllNotes = async (body) => {
     try {
         const data = await Notes.findAll({ where: { userId: body } });
-        console.log('-->',data);    
-        if (data){
+        console.log('-->', data);
+        if (data) {
             return {
                 code: HttpStatus.OK,
-                data:data,
+                data: data,
                 Message: "notes fetched SuccessFully"
             }
-        }else{
+        } else {
             return {
                 code: HttpStatus.NOT_FOUND,
-                data:[],
+                data: [],
                 Message: "notes Not Found"
             }
         }
     } catch (error) {
         return {
             code: HttpStatus.BAD_REQUEST,
-            data:[],
+            data: [],
             message: 'Unable to fetch notes'
         }
     }
-    
+
 }
 
 //getting notes by id
-export const getNotesById = async (body) =>{
+export const getNotesById = async (body) => {
     try {
-        if (!body){
+        if (!body) {
             return {
                 code: HttpStatus.NOT_FOUND,
-                data:[],
+                data: [],
                 Message: "Please Enter Valid Id"
             }
-        }else{
-            const Maindata =await Notes.findByPk(body)
-            if (!Maindata){
+        } else {
+            const Maindata = await Notes.findByPk(body)
+            if (!Maindata) {
                 return {
                     code: HttpStatus.NOT_FOUND,
-                    data:[],
+                    data: [],
                     Message: "notes Not Found"
                 }
-            }else{
+            } else {
                 return {
                     code: HttpStatus.OK,
-                    data:Maindata,
+                    data: Maindata,
                     Message: "notes Fetch Successfully"
                 }
             }
-            
+
         }
     } catch (error) {
         return {
             code: HttpStatus.BAD_REQUEST,
-            data:[],
+            data: [],
             message: 'Unable to fetch notes'
-        }   
+        }
     }
 }
 
 //update notes
-export const updateNote = async (updatedNotes,ID) =>{
+export const updateNote = async (updatedNotes, ID) => {
     try {
-        if (!updatedNotes || !ID){
+        if (!updatedNotes || !ID) {
             return {
                 code: HttpStatus.NOT_FOUND,
-                data:[],
+                data: [],
                 message: "Please Provide Valid Id"
             }
-        }else{
-            await Notes.update(updatedNotes,{where:{id:ID}})
+        } else {
+            await Notes.update(updatedNotes, { where: { id: ID } })
             const data = await Notes.findByPk(ID)
 
             return {
@@ -111,8 +111,44 @@ export const updateNote = async (updatedNotes,ID) =>{
     } catch (error) {
         return {
             code: HttpStatus.BAD_REQUEST,
-            data:[],
+            data: [],
             message: 'Unable to update notes'
-        }  
+        }
     }
 }
+
+//delete notes
+export const deleteNotes = async (ID) => {
+    try {
+        if (!ID) {
+            return {
+                code: HttpStatus.NOT_FOUND,
+                data: [],
+                message: "Please Provide Id"
+            }
+        } else {
+            const data = Notes.findByPk(ID);
+            if (!data) {
+                return {
+                    code: HttpStatus.NOT_FOUND,
+                    data: [],
+                    message: "Please Provide Valid Id"
+                }
+            } else {
+                Notes.destroy({ where: { id: ID } })
+                return {
+                    code: HttpStatus.OK,
+                    data: [],
+                    message: "Deleted The Note"
+                }
+            }
+        }
+    } catch (error) {
+        return {
+            code: HttpStatus.BAD_REQUEST,
+            data: [],
+            message: 'Unable to delete notes'
+        }
+    }
+}
+
