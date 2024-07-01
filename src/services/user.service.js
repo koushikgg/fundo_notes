@@ -17,16 +17,25 @@ export const getAllUsers = async () => {
 //create new user
 export const signup = async (body) => {
   try {
-    const hashedPassword = await bcrypt.hash(body.password,10);
-    body.password=hashedPassword;
-    const findUser = await findOne()
-    const data = await User.create(body);
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+    body.password = hashedPassword;
+    const findUser = await User.findOne({ where: { email: body.email } })
+    if (findUser) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        data: [],
+        message: 'This User Already exists'
+      };
+    } else {
+      const data = await User.create(body);
 
-    return {
-      code: HttpStatus.CREATED,
-      data: data,
-      message: 'User created successfully'
-    };
+      return {
+        code: HttpStatus.CREATED,
+        data: data,
+        message: 'User created successfully'
+      };
+    }
+
 
   } catch (error) {
     return {
@@ -42,38 +51,38 @@ export const signup = async (body) => {
 //login user
 export const signin = async (body) => {
   try {
-    if (!body.email || !body.password){
+    if (!body.email || !body.password) {
       return {
         code: HttpStatus.BAD_REQUEST,
         data: [],
-        message:"Email and password required"
+        message: "Email and password required"
       }
     }
-    
+
     // const user = await User.findOne({where: {email:body.email}})
 
-    if (!user){
+    if (!user) {
       return {
         code: HttpStatus.UNAUTHORIZED,
         data: [],
-        message:"Invalid Email"
+        message: "Invalid Email"
       }
     }
 
-    const validPassword = await bcrypt.compare(body.password,user.password);
-    if (!validPassword){
+    const validPassword = await bcrypt.compare(body.password, user.password);
+    if (!validPassword) {
       return {
         code: HttpStatus.UNAUTHORIZED,
         data: [],
-        message:"Invalid Password"
+        message: "Invalid Password"
       }
     }
 
-    const token = jwt.sign({userId : user.id, userEmail: user.email},screteKey)
+    const token = jwt.sign({ userId: user.id, userEmail: user.email }, screteKey)
     return {
       code: HttpStatus.OK,
-      data: {token},
-      message:"Login Successful"
+      data: { token },
+      message: "Login Successful"
     }
 
   } catch (error) {
