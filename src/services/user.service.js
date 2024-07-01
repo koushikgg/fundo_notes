@@ -18,7 +18,8 @@ export const getAllUsers = async () => {
 export const signup = async (body) => {
   try {
     const hashedPassword = await bcrypt.hash(body.password,10);
-    body.password=hashedPassword
+    body.password=hashedPassword;
+    const findUser = await findOne()
     const data = await User.create(body);
 
     return {
@@ -49,7 +50,7 @@ export const signin = async (body) => {
       }
     }
     
-    const user = await User.findOne({where: {email:body.email}})
+    // const user = await User.findOne({where: {email:body.email}})
 
     if (!user){
       return {

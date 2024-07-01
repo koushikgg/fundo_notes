@@ -11,6 +11,7 @@ router.get('',userAuth, notesController.readAllNotes);
 router.get('/:id',userAuth,notesController.getNotesById)
 router.put('/:id',userAuth,notesController.updateNote)
 router.delete('/:id',userAuth,notesController.deleteNotes)
+router.put('/setColor/:id',userAuth,notesController.changeColor)
 
 
 export default router;

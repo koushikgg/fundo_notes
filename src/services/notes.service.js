@@ -3,6 +3,7 @@ import sequelize, { DataTypes } from '../config/database';
 import HttpStatus from 'http-status-codes';
 // import { updateNote } from '../controllers/notes.controller';
 
+
 const Notes = require('../models/notes')(sequelize, DataTypes);
 
 //creating notes
@@ -30,7 +31,7 @@ export const createNotes = async (body) => {
 export const readAllNotes = async (body) => {
     try {
         const data = await Notes.findAll({ where: { userId: body } });
-        console.log('-->', data);
+        // console.log('-->', data);
         if (data) {
             return {
                 code: HttpStatus.OK,
@@ -55,21 +56,21 @@ export const readAllNotes = async (body) => {
 }
 
 //getting notes by id
-export const getNotesById = async (body) => {
+export const getNotesById = async (userID, ID) => {
     try {
-        if (!body) {
+        if (!ID) {
             return {
                 code: HttpStatus.NOT_FOUND,
                 data: [],
                 Message: "Please Enter Valid Id"
             }
         } else {
-            const Maindata = await Notes.findByPk(body)
-            if (!Maindata) {
+            const Maindata = await Notes.findAll({ where: { id: ID, userId: userID } })
+            if (Maindata.length === 0) {
                 return {
-                    code: HttpStatus.NOT_FOUND,
+                    code: HttpStatus.UNAUTHORIZED,
                     data: [],
-                    Message: "notes Not Found"
+                    Message: "invalid user"
                 }
             } else {
                 return {
@@ -90,7 +91,7 @@ export const getNotesById = async (body) => {
 }
 
 //update notes
-export const updateNote = async (updatedNotes, ID) => {
+export const updateNote = async (userID, updatedNotes, ID) => {
     try {
         if (!updatedNotes || !ID) {
             return {
@@ -99,13 +100,22 @@ export const updateNote = async (updatedNotes, ID) => {
                 message: "Please Provide Valid Id"
             }
         } else {
-            await Notes.update(updatedNotes, { where: { id: ID } })
-            const data = await Notes.findByPk(ID)
+            const userData =await Notes.findByPk(ID)
+            if (userID != userData.userId) {
+                return {
+                    code: HttpStatus.UNAUTHORIZED,
+                    data: [],
+                    Message: "invalid user"
+                }
+            } else {
+                await Notes.update(updatedNotes, { where: { id: ID } })
+                const data = await Notes.findByPk(ID)
 
-            return {
-                code: HttpStatus.OK,
-                data: data,
-                message: "note Updated Successfully"
+                return {
+                    code: HttpStatus.OK,
+                    data: data,
+                    message: "note Updated Successfully"
+                }
             }
         }
     } catch (error) {
@@ -118,7 +128,7 @@ export const updateNote = async (updatedNotes, ID) => {
 }
 
 //delete notes
-export const deleteNotes = async (ID) => {
+export const deleteNotes = async (userID, ID) => {
     try {
         if (!ID) {
             return {
@@ -127,15 +137,22 @@ export const deleteNotes = async (ID) => {
                 message: "Please Provide Id"
             }
         } else {
-            const data = Notes.findByPk(ID);
-            if (!data) {
+            const userData =await Notes.findByPk(ID)
+            if (!userData) {
                 return {
                     code: HttpStatus.NOT_FOUND,
                     data: [],
                     message: "Please Provide Valid Id"
                 }
+            }
+            if (userID != userData.userId) {
+                return {
+                    code: HttpStatus.UNAUTHORIZED,
+                    data: [],
+                    Message: "invalid user"
+                }
             } else {
-                Notes.destroy({ where: { id: ID } })
+                await Notes.destroy({ where: { id: ID } })
                 return {
                     code: HttpStatus.OK,
                     data: [],
@@ -152,3 +169,44 @@ export const deleteNotes = async (ID) => {
     }
 }
 
+//change color
+export const changeColor = async (userID, color, ID) => {
+    try {
+        if (!color || !ID) {
+            return {
+                code: HttpStatus.NOT_FOUND,
+                data: [],
+                message: "Please Provide colour and ID"
+            }
+        } else {
+            const userData =await Notes.findByPk(ID)
+            if (!userData) {
+                return {
+                    code: HttpStatus.NOT_FOUND,
+                    data: [],
+                    message: "Please Provide Valid Id"
+                }
+            }
+            if (userID != userData.userId) {
+                return {
+                    code: HttpStatus.UNAUTHORIZED,
+                    data: [],
+                    Message: "invalid user"
+                }
+            } else {
+                await Notes.update(color, { where: { id: ID } })
+                return {
+                    code: HttpStatus.OK,
+                    data: [],
+                    message: "colour Changed Successfully"
+                }
+            }
+        }
+    } catch (error) {
+        return {
+            code: HttpStatus.BAD_REQUEST,
+            data: [],
+            message: 'Unable to change the colour'
+        }
+    }
+}
